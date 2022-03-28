@@ -1,6 +1,7 @@
 <template>
-  <v-app>
-    <v-app-bar app color="primary" dark>
+  <v-app style="background: rgba(0, 0, 0, 0)">
+    <v-app-bar app color="primary" dark v-if="!login">
+      <button @click="show">push to router</button>
       <div class="d-flex align-center">
         <v-img
           alt="Vuetify Logo"
@@ -40,11 +41,31 @@
 </template>
 
 <script>
+import router from "@/router";
+
 export default {
   name: "App",
 
   data: () => ({
     //
   }),
+  computed: {
+    login: function () {
+      return router.currentRoute.path === "/login";
+    },
+  },
+  methods: {
+    show() {
+      console.log(router.currentRoute.path);
+      console.log(router.currentRoute.path === "/login");
+    },
+  },
 };
 </script>
+
+<style>
+body {
+  background-image: url("./assets/background3.jpg");
+  /*background-size: cover;*/
+}
+</style>
