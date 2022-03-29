@@ -1,23 +1,16 @@
 <template>
-  <div id="te">
-    <button @click="test" class="warning">push to router</button>
-    <div v-show="true">1</div>
-    <div class="primary d-flex flex-column" v-if="show2">2</div>
-    <div class="primary d-flex flex-column" v-if="show3">3</div>
-  </div>
+  <LoginForm />
 </template>
 
 <script>
 import router from "@/router";
+import LoginForm from "@/components/LoginForm";
 
 export default {
   name: "LoginView",
-  data() {
-    return {
-      show1: false,
-      show2: true,
-      show3: false,
-    };
+  data: () => ({}),
+  components: {
+    LoginForm,
   },
   methods: {
     test() {
@@ -28,14 +21,4 @@ export default {
 };
 </script>
 
-<style scoped>
-div {
-  background-color: aqua;
-}
-#te div:nth-child(2) {
-  width: 400px;
-  height: 50px;
-  background-color: aqua;
-  color: black;
-}
-</style>
+<style scoped></style>
