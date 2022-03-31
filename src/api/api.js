@@ -14,3 +14,6 @@ if (process.env.NODE_ENV === "production") {
   // eslint-disable-next-line no-unused-vars
   baseURL = "http://192.168.119.249:11401";
 }
+
+console.log("当前baseURL为：", baseURL);
+export { baseURL };

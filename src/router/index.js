@@ -24,6 +24,12 @@ const routes = [
     name: "login",
     component: () => import("../views/LoginView"),
   },
+  {
+    path: "/user",
+    name: "user",
+    component: () => import("../views/UserView"),
+    children: [],
+  },
 ];
 
 const router = new VueRouter({
