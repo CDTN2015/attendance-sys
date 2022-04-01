@@ -64,22 +64,19 @@
       </v-list>
 
       <!--        两个弹出面板：修改密码、提交申请-->
-      <v-list nav dense>
-        <v-list-item-group no-action>
-          <v-list-item
-            v-for="({ title, icon }, i) in settingItems"
-            :key="i"
-            @click="handle(i)"
-          >
-            <v-list-item-icon>
-              <v-icon v-text="icon"></v-icon>
-            </v-list-item-icon>
-            <v-list-item-title v-text="title"></v-list-item-title>
-          </v-list-item>
-        </v-list-item-group>
+      <v-list-item
+        v-for="({ title, icon }, i) in settingItems"
+        :key="i"
+        @click="handle(i)"
+        link
+      >
+        <v-list-item-icon>
+          <v-icon v-text="icon"></v-icon>
+        </v-list-item-icon>
+        <v-list-item-title v-text="title"></v-list-item-title>
+      </v-list-item>
 
-        <v-divider></v-divider>
-      </v-list>
+      <v-divider></v-divider>
 
       <v-dialog v-model="dialog" width="500">
         <!--              <template v-slot:activator="{ on, attrs }">-->
