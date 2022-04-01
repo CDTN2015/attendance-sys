@@ -44,6 +44,14 @@
               off-icon="mdi-lock-remove"
               @click="cleanLogin"
             ></v-checkbox>
+            <v-checkbox
+              id="test-checkbox"
+              v-model="offline"
+              label="离线测试"
+              light
+              on-icon="mdi-access-point-remove"
+              off-icon="mdi-access-point"
+            ></v-checkbox>
             <v-btn
               elevation="2"
               block
@@ -62,7 +70,7 @@
         </v-container>
         <v-alert
           :value="loginStatue"
-          type="success"
+          :type="loginType"
           style="width: 40%; margin: 20px auto"
           transition="scale-transition"
         >
@@ -74,9 +82,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import router from "@/router";
-import { baseURL } from "@/api/api";
+import { axios } from "@/api/axiosConfig";
 import { timeout } from "@/api/function";
 export default {
   name: "LoginView",
@@ -99,8 +106,10 @@ export default {
     show: false,
     load: false,
     rememberPwd: false,
+    offline: true,
     loginStatue: false,
-    loginMsg: "*************",
+    loginMsg: "",
+    loginType: "info",
   }),
   created() {
     // 检测到Enter时尝试登入
@@ -119,7 +128,6 @@ export default {
   computed: {},
   methods: {
     async logConfirm() {
-      console.log("try login");
       if (this.valid) {
         let form = {
           account: this.user.account,
@@ -131,28 +139,41 @@ export default {
           localStorage.setItem("loginName", form.account);
           localStorage.setItem("loginPassword", form.password);
         }
-        try {
-          const response = await axios.post(baseURL + "/login/signIn", form);
-          console.log(response);
-
+        if (this.offline) {
+          console.log("离线登录");
           this.loginStatue = true;
-          this.loginMsg = response.data.msg;
-          if (response.data.code === 200) {
-            localStorage.setItem("Token", response.data.data.token);
-            await timeout(1000);
-            // 判断管理员与用户权限选择不同页面跳转
-            await router.push({
-              path: "/user",
-            });
-            // await router.replace({
-            //   path: "/personal",
-            // });
+          this.loginMsg = "登录成功";
+          this.loginType = "success";
+          await router.push({
+            path: "/user",
+          });
+        } else {
+          try {
+            const response = await axios.post("/login/signIn", form);
+            console.log(response);
+            this.loginStatue = true;
+            if (response.data.code === 200) {
+              this.loginMsg = "登录成功";
+              this.loginType = "success";
+              localStorage.setItem("Token", response.data.data.token);
+              // 判断管理员与用户权限选择不同页面跳转
+              await router.push({
+                path: "/user",
+              });
+              // await router.replace({
+              //   path: "/personal",
+              // });
+            } else {
+              this.loginMsg = "登录失败";
+              this.loginType = "error";
+              console.log("响应拦截器？");
+              localStorage.removeItem("Token");
+            }
+            await timeout(3000);
+            this.loginStatue = false;
+          } catch (error) {
+            console.error(error);
           }
-          // else {
-          //
-          // }
-        } catch (error) {
-          console.error(error);
         }
       }
     },
@@ -179,6 +200,13 @@ export default {
   font-size: 30px;
   font-weight: bold;
   color: #85e5fd;
+}
+#form-title,
+#input-title {
+  /* 禁止选中 */
+  -moz-user-select: none; /*火狐*/
+  -webkit-user-select: none; /*webkit浏览器*/
+  -ms-user-select: none; /*IE10*/
 }
 #form-title:after {
   right: 80px;

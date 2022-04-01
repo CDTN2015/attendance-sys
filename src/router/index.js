@@ -9,6 +9,7 @@ const routes = [
     path: "/",
     name: "home",
     component: HomeView,
+    redirect: "/login",
   },
   {
     path: "/about",
@@ -28,7 +29,24 @@ const routes = [
     path: "/user",
     name: "user",
     component: () => import("../views/UserView"),
-    children: [],
+    redirect: "/personal",
+    children: [
+      {
+        path: "/personal",
+        name: "personal",
+        component: () => import("../views/PersonalView"),
+      },
+      {
+        path: "/employees",
+        name: "employees",
+        component: () => import("../views/EmployeesView"),
+      },
+      {
+        path: "/backend",
+        name: "backend",
+        component: () => import("../views/BackEndView"),
+      },
+    ],
   },
 ];
 
