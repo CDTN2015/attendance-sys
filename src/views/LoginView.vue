@@ -18,7 +18,6 @@
               required
               prepend-inner-icon="mdi-account"
               clearable
-              light
               :loading="load"
             ></v-text-field>
             <v-text-field
@@ -29,7 +28,6 @@
               required
               prepend-inner-icon="mdi-lock"
               clearable
-              light
               :loading="load"
               :type="show ? 'text' : 'password'"
               :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
@@ -39,7 +37,6 @@
               id="pwd-checkbox"
               v-model="rememberPwd"
               label="记住密码"
-              light
               on-icon="mdi-lock-check"
               off-icon="mdi-lock-remove"
               @click="cleanLogin"
@@ -48,7 +45,6 @@
               id="test-checkbox"
               v-model="offline"
               label="离线测试"
-              light
               on-icon="mdi-access-point-remove"
               off-icon="mdi-access-point"
             ></v-checkbox>
@@ -59,7 +55,6 @@
               :loading="load"
               color="primary"
               :disabled="!valid"
-              light
               large
               @click="logConfirm"
             >
@@ -152,7 +147,7 @@ export default {
               this.loginMsg = "登录成功，准备跳转";
               this.loginType = "success";
               localStorage.setItem("Token", response.data.data.token);
-              await timeout(3000);
+              await timeout(1000);
               this.loginStatue = false;
               // 判断管理员与用户权限选择不同页面跳转
               await router.push({
@@ -166,7 +161,7 @@ export default {
               this.loginType = "error";
               console.log("响应拦截器？");
               localStorage.removeItem("Token");
-              await timeout(3000);
+              await timeout(2000);
               this.loginStatue = false;
             }
           } catch (error) {

@@ -1,6 +1,6 @@
 <template>
   <div id="background">
-    <v-card id="outer">
+    <div id="outer">
       <v-list id="top">
         <v-list-item>
           <v-list-item-avatar tile>
@@ -15,17 +15,16 @@
             >
           </v-list-item-content>
         </v-list-item>
-
-        <v-list-item> </v-list-item>
       </v-list>
       <router-view></router-view>
-    </v-card>
+    </div>
     <!--    右侧导航抽屉-->
     <v-navigation-drawer
       permanent
       expand-on-hover
       right
       absolute
+      dark
       src="@/assets/background1.jpg"
     >
       <!--      用户信息栏-->

@@ -56,11 +56,11 @@
       </v-card-actions>
     </v-card>
     <v-snackbar
-      v-model="loginStatue"
-      :color="loginType === 'success' ? 'green' : 'red'"
+      v-model="snackbarStatue"
+      :color="snackbarType === 'success' ? 'green' : 'red'"
       transition="scale-transition"
     >
-      {{ loginMsg }}
+      {{ snackbarMsg }}
     </v-snackbar>
   </div>
 </template>
@@ -91,9 +91,9 @@ export default {
         (v) => v === this.password.new || "两次密码需要一致",
       ],
       show: false,
-      loginStatue: false,
-      loginMsg: "",
-      loginType: "info",
+      snackbarStatue: false,
+      snackbarMsg: "",
+      snackbarType: "info",
     };
   },
   methods: {
@@ -103,42 +103,51 @@ export default {
     async submit() {
       this.$refs.form.validate();
       if (this.valid) {
-        let form = {
-          account: localStorage.getItem("loginName"),
-          password: this.password.new,
-        };
-        console.log(form);
-        // try {
-        //   const response = await axios.post("/login/updatePassword", form);
-        //   console.log(response);
-        //   this.loginStatue = true;
-        //   if (response.data.code === 200) {
-        //     this.loginMsg = "修改成功";
-        //     this.loginType = "success";
-        //     // 判断管理员与用户权限选择不同页面跳转
-        //     await router.push({
-        //       path: "/user",
-        //     });
-        //     // await router.replace({
-        //     //   path: "/personal",
-        //     // });
-        //   } else {
-        //     this.loginMsg = "修改失败";
-        //     this.loginType = "error";
-        //     console.log("响应拦截器？");
-        //     localStorage.removeItem("Token");
-        //   }
-        //   await timeout(3000);
-        //   this.loginStatue = false;
-        // } catch (error) {
-        //   console.error(error);
-        // }
-        this.loginStatue = true;
-        this.loginMsg = "登录成功";
-        this.loginType = "success";
-        await timeout(3000);
-        this.loginStatue = false;
-        this.close();
+        if (this.password.old === this.password.new) {
+          this.snackbarStatue = true;
+          this.snackbarMsg = "新旧密码一致";
+          this.snackbarType = "warning";
+          await timeout(2000);
+          this.snackbarStatue = false;
+          console.log(this.loginStatue);
+        } else {
+          let form = {
+            account: localStorage.getItem("loginName"),
+            password: this.password.new,
+          };
+          console.log(form);
+          // try {
+          //   const response = await axios.post("/login/updatePassword", form);
+          //   console.log(response);
+          //   this.loginStatue = true;
+          //   if (response.data.code === 200) {
+          //     this.loginMsg = "修改成功";
+          //     this.loginType = "success";
+          //     // 判断管理员与用户权限选择不同页面跳转
+          //     await router.push({
+          //       path: "/user",
+          //     });
+          //     // await router.replace({
+          //     //   path: "/personal",
+          //     // });
+          //   } else {
+          //     this.loginMsg = "修改失败";
+          //     this.loginType = "error";
+          //     console.log("响应拦截器？");
+          //     localStorage.removeItem("Token");
+          //   }
+          //   await timeout(3000);
+          //   this.loginStatue = false;
+          // } catch (error) {
+          //   console.error(error);
+          // }
+          this.snackbarStatue = true;
+          this.snackbarMsg = "修改成功";
+          this.snackbarType = "success";
+          await timeout(1000);
+          this.loginStatue = false;
+          this.close();
+        }
       }
     },
   },
