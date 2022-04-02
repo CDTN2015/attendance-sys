@@ -68,14 +68,13 @@
             </v-btn>
           </div>
         </v-container>
-        <v-alert
-          :value="loginStatue"
-          :type="loginType"
-          style="width: 40%; margin: 20px auto"
+        <v-snackbar
+          v-model="loginStatue"
+          :color="loginType === 'success' ? 'green' : 'red'"
           transition="scale-transition"
         >
           {{ loginMsg }}
-        </v-alert>
+        </v-snackbar>
       </div>
     </v-form>
   </div>
@@ -141,9 +140,6 @@ export default {
         }
         if (this.offline) {
           console.log("离线登录");
-          this.loginStatue = true;
-          this.loginMsg = "登录成功";
-          this.loginType = "success";
           await router.push({
             path: "/user",
           });
@@ -153,9 +149,11 @@ export default {
             console.log(response);
             this.loginStatue = true;
             if (response.data.code === 200) {
-              this.loginMsg = "登录成功";
+              this.loginMsg = "登录成功，准备跳转";
               this.loginType = "success";
               localStorage.setItem("Token", response.data.data.token);
+              await timeout(3000);
+              this.loginStatue = false;
               // 判断管理员与用户权限选择不同页面跳转
               await router.push({
                 path: "/user",
@@ -164,13 +162,13 @@ export default {
               //   path: "/personal",
               // });
             } else {
-              this.loginMsg = "登录失败";
+              this.loginMsg = "登录失败，请重试";
               this.loginType = "error";
               console.log("响应拦截器？");
               localStorage.removeItem("Token");
+              await timeout(3000);
+              this.loginStatue = false;
             }
-            await timeout(3000);
-            this.loginStatue = false;
           } catch (error) {
             console.error(error);
           }

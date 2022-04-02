@@ -20,6 +20,7 @@
       </v-list>
       <router-view></router-view>
     </v-card>
+    <!--    右侧导航抽屉-->
     <v-navigation-drawer
       permanent
       expand-on-hover
@@ -46,7 +47,7 @@
       </v-list>
 
       <!--        三个操作面板：个人、团队、后台-->
-      <v-list nav dense>
+      <v-list nav>
         <v-list-item-group v-model="selectedUserItem" mandatory>
           <v-list-item
             v-for="({ title, icon }, i) in userItems"
@@ -64,57 +65,26 @@
       </v-list>
 
       <!--        两个弹出面板：修改密码、提交申请-->
-      <v-list-item
-        v-for="({ title, icon }, i) in settingItems"
-        :key="i"
-        @click="handle(i)"
-        link
-      >
-        <v-list-item-icon>
-          <v-icon v-text="icon"></v-icon>
-        </v-list-item-icon>
-        <v-list-item-title v-text="title"></v-list-item-title>
-      </v-list-item>
+      <v-list nav>
+        <v-list-item
+          v-for="({ title, icon }, i) in settingItems"
+          :key="i"
+          @click="handle(i)"
+          link
+        >
+          <v-list-item-icon>
+            <v-icon v-text="icon"></v-icon>
+          </v-list-item-icon>
+          <v-list-item-title v-text="title"></v-list-item-title>
+        </v-list-item>
 
-      <v-divider></v-divider>
-
-      <v-dialog v-model="dialog" width="500">
-        <!--              <template v-slot:activator="{ on, attrs }">-->
-        <!--                <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">-->
-        <!--                  Click Me-->
-        <!--                </v-btn>-->
-        <!--              </template>-->
-
-        <v-card>
-          <v-card-title class="text-h5 grey lighten-2">
-            Privacy Policy
-          </v-card-title>
-
-          <v-card-text>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
-          </v-card-text>
-
-          <v-divider></v-divider>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="dialog = false">
-              I accept
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+        <v-divider></v-divider>
+      </v-list>
 
       <!--      退出系统-->
       <template v-slot:append>
         <v-divider></v-divider>
-        <v-list nav dense>
+        <v-list nav>
           <v-list-item link @click="logout">
             <v-list-item-icon>
               <v-icon>mdi-logout</v-icon>
@@ -124,12 +94,22 @@
         </v-list>
       </template>
     </v-navigation-drawer>
+
+    <!--      弹出框-->
+    <v-dialog v-model="modifyPwd" width="400" persistent>
+      <ModifyPwd v-on:closeDialog="closeDialog" />
+    </v-dialog>
+    <v-dialog v-model="submitRequest" width="400" persistent>
+      <SubmitRequest v-on:closeDialog="closeDialog" />
+    </v-dialog>
   </div>
 </template>
 
 <script>
 // import axios from "axios";
 import router from "@/router";
+import ModifyPwd from "@/components/ModifyPwd";
+import SubmitRequest from "@/components/SubmitRequest";
 
 export default {
   name: "UserView",
@@ -154,8 +134,13 @@ export default {
         { title: "修改密码", icon: "mdi-lock-open-alert" },
         { title: "提交申请", icon: "mdi-send-check" },
       ],
-      dialog: false,
+      modifyPwd: false,
+      submitRequest: false,
     };
+  },
+  components: {
+    ModifyPwd,
+    SubmitRequest,
   },
   methods: {
     test(i) {
@@ -170,14 +155,24 @@ export default {
       }
     },
     handle(i) {
-      console.log(i);
-      this.dialog = true;
+      if (this.settingItems[i].title === "修改密码") {
+        this.modifyPwd = true;
+      } else if (this.settingItems[i].title === "提交申请") {
+        this.submitRequest = true;
+      }
     },
     logout() {
       localStorage.setItem("Token", "");
       router.replace({
         path: "/",
       });
+    },
+    closeDialog(value) {
+      if (value === "ModifyPwd") {
+        this.modifyPwd = false;
+      } else if (value === "SubmitRequest") {
+        this.submitRequest = false;
+      }
     },
   },
 };
