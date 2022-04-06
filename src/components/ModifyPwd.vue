@@ -76,6 +76,7 @@ export default {
     return {
       valid: false,
       password: {
+        // 正常来说应该在localStorage中存加密的密码串吧？
         old: "",
         new: "",
         repeat: "",
