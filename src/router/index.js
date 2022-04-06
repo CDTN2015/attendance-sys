@@ -23,17 +23,17 @@ const routes = [
       {
         path: "/personal",
         name: "personal",
-        component: () => import("../views/PersonalView"),
+        component: () => import("../views/User/PersonalView"),
       },
       {
         path: "/employees",
         name: "employees",
-        component: () => import("../views/EmployeesView"),
+        component: () => import("../views/User/EmployeesView"),
       },
       {
         path: "/backend",
         name: "backend",
-        component: () => import("../views/BackEndView"),
+        component: () => import("../views/User/BackEndView"),
       },
     ],
   },

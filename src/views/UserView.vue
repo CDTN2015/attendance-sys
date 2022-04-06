@@ -143,7 +143,7 @@ export default {
   },
   methods: {
     test(i) {
-      if (this.selectedItem !== i) {
+      if (this.selectedUserItem !== i) {
         router
           .push({
             path: this.userItems[i].route,

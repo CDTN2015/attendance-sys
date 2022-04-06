@@ -10,12 +10,13 @@
             v-model="selectType"
             :items="items"
             label="事务类型"
+            @change="resetSnackbar"
           ></v-select>
-          <AskForLeave v-if="selectType === '请假'" />
-          <WorkOvertime v-if="selectType === '加班'" />
-          <ForgetPunch v-if="selectType === '忘记打卡'" />
+          <!--          请假和加班格式相同，复用-->
+          <RequestList ref="AskForLeave" :type="selectType" />
+          <!--          <ForgetPunch v-if="selectType === '忘记打卡'" ref="ForgetPunch" />-->
         </v-container>
-        <small>可使用鼠标滚轮切换月份</small>
+        <small>可使用鼠标滚轮切换月份和时间</small>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -27,9 +28,8 @@
 </template>
 
 <script>
-import AskForLeave from "@/components/submitRequests/AskForLeave";
-import WorkOvertime from "@/components/submitRequests/WorkOvertime";
-import ForgetPunch from "@/components/submitRequests/ForgetPunch";
+import RequestList from "@/components/RequestList";
+// import { timeout } from "@/api/function";
 export default {
   name: "SubmitRequest",
   data() {
@@ -38,13 +38,22 @@ export default {
       items: ["请假", "加班", "忘记打卡"],
     };
   },
-  components: { AskForLeave, WorkOvertime, ForgetPunch },
+  components: { RequestList },
   methods: {
     close() {
-      this.$emit("closeDialog", "SubmitRequest");
+      this.resetSnackbar();
+      // 根据后续开发情况选择是否保留延迟
+      setTimeout(() => {
+        this.$emit("closeDialog", "SubmitRequest");
+      }, 500);
     },
-    submit() {
-      this.close();
+    async submit() {
+      if (await this.$refs.AskForLeave.submit()) {
+        this.close();
+      }
+    },
+    resetSnackbar() {
+      this.$refs.AskForLeave.snackbarStatue = false;
     },
   },
 };
