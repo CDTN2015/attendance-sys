@@ -16,8 +16,9 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
-      <router-view></router-view>
     </div>
+
+    <router-view></router-view>
     <!--    右侧导航抽屉-->
     <v-navigation-drawer
       permanent
@@ -116,8 +117,8 @@ export default {
     return {
       token: localStorage.getItem("Token"),
       user: {
-        name: "江宇程",
-        department: "技术研发部",
+        name: localStorage.getItem("loginName"),
+        department: localStorage.getItem("department"),
       },
       userItems: [
         { title: "个人考勤", icon: "mdi-account-box", route: "/personal" },

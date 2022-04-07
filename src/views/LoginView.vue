@@ -147,6 +147,7 @@ export default {
               this.loginMsg = "登录成功，准备跳转";
               this.loginType = "success";
               localStorage.setItem("Token", response.data.data.token);
+              localStorage.setItem("department", response.data.data.department);
               await timeout(1000);
               this.loginStatue = false;
               // 判断管理员与用户权限选择不同页面跳转
