@@ -110,7 +110,6 @@ export default {
           this.snackbarType = "warning";
           await timeout(2000);
           this.snackbarStatue = false;
-          console.log(this.loginStatue);
         } else {
           let form = {
             account: localStorage.getItem("loginName"),
@@ -146,7 +145,7 @@ export default {
           this.snackbarMsg = "修改成功";
           this.snackbarType = "success";
           await timeout(1000);
-          this.loginStatue = false;
+          this.snackbarStatue = false;
           this.close();
         }
       }
