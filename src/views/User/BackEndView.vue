@@ -67,7 +67,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="item in approvalList" :key="item.name" id="data">
+              <tr v-for="item in approvalList" :key="item.id" id="data">
                 <td style="width: 30%; min-width: 150px">{{ item.name }}</td>
                 <td style="width: 30%; min-width: 200px">{{ item.date }}</td>
                 <td
