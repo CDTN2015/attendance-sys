@@ -1,5 +1,4 @@
 <template>
-  <!--  <p>test</p>-->
   <div class="table">
     <v-row class="mx-10" style="text-align: center">
       <v-col cols="12" sm="6" md="4" lg="3" class="mt-2 justify-center">
@@ -70,28 +69,30 @@
         <li style="width: 9%">上班状态</li>
       </ul>
       <div class="pollution-warp">
-        <ul
-          v-for="(item, index) in detailList"
-          :key="index"
-          class="pollution-list"
-        >
-          <li style="width: 11%">{{ item.workDay }}</li>
-          <li style="width: 9%">{{ item.workSign }}</li>
-          <li style="width: 9%">{{ item.leaveSign }}</li>
-          <li style="width: 9%">{{ item.lateHour }}</li>
-          <li style="width: 9%">{{ item.earlyLeaveHour }}</li>
-          <li style="width: 9%">{{ item.workDuration }}</li>
-          <li style="width: 9%">{{ item.lackDuration }}</li>
-          <li style="width: 9%">item.overwork</li>
-          <li style="width: 9%">item.matters</li>
-          <li style="width: 9%">item.businessTrip</li>
-          <li
-            style="width: 9%"
-            :style="item.note === '正常' ? 'color:#33fc0e' : 'color:red'"
+        <vue-seamless-scroll :class-option="classOption" :data="detailList">
+          <ul
+            v-for="(item, index) in detailList"
+            :key="index"
+            class="pollution-list"
           >
-            {{ item.note }}
-          </li>
-        </ul>
+            <li style="width: 10%">{{ item.workDay }}</li>
+            <li style="width: 9%">{{ item.workSign }}</li>
+            <li style="width: 9%">{{ item.leaveSign }}</li>
+            <li style="width: 9%">{{ item.lateHour }}</li>
+            <li style="width: 9%">{{ item.earlyLeaveHour }}</li>
+            <li style="width: 9%">{{ item.workDuration }}</li>
+            <li style="width: 9%">{{ item.lackDuration }}</li>
+            <li style="width: 9%">item.overwork</li>
+            <li style="width: 9%">item.matters</li>
+            <li style="width: 9%">item.businessTrip</li>
+            <li
+              style="width: 9%"
+              :style="item.note === '正常' ? 'color:#33fc0e' : 'color:red'"
+            >
+              {{ item.note }}
+            </li>
+          </ul>
+        </vue-seamless-scroll>
       </div>
     </div>
 
@@ -106,6 +107,7 @@
 </template>
 
 <script>
+import vueSeamlessScroll from "vue-seamless-scroll";
 import { axios } from "@/api/axiosConfig";
 import { timeout } from "@/api/function";
 import router from "@/router";
@@ -134,9 +136,11 @@ export default {
       snackbarStatue: false,
       snackbarType: "",
       snackbarMsg: "",
-      Month: "",
       menu: false,
     };
+  },
+  components: {
+    vueSeamlessScroll,
   },
   created() {
     this.selectMonth = new Date(
@@ -151,6 +155,18 @@ export default {
     queryMonth() {
       return `${this.selectMonth.substring(0, 4)}年
       ${Number(this.selectMonth.substring(5, 7))}月`;
+    },
+    classOption() {
+      return {
+        step: 0.9, // 数值越大速度滚动越快
+        limitMoveNum: 1, // 开始无缝滚动的数据量 this.dataList.length
+        hoverStop: true, // 是否开启鼠标悬停stop
+        direction: 1, // 0向下 1向上 2向左 3向右
+        openWatch: true, // 开启数据实时监控刷新dom
+        singleHeight: 0, // 单步运动停止的高度(默认值0是无缝不停止的滚动) direction => 0/1
+        singleWidth: 0, // 单步运动停止的宽度(默认值0是无缝不停止的滚动) direction => 2/3
+        waitTime: 1000, // 单步运动停止的时间(默认值1000ms)
+      };
     },
   },
   methods: {
@@ -218,10 +234,16 @@ export default {
   color: white;
 }
 
+ul {
+  padding: 0;
+}
+
 .pollution-content {
   min-width: 1300px;
-  height: 600px;
-  margin: auto 0;
+}
+
+.pollution-top {
+  display: flex;
 }
 
 .pollution-content .pollution-top {
@@ -230,25 +252,31 @@ export default {
   font-size: 20px;
   font-weight: bold;
   color: #dde1e0;
-  display: flex;
   line-height: 28px;
   border: 1px solid #81cfdb;
   background: rgba(129, 207, 219, 0.3);
 }
 
-.pollution-content .pollution-top li {
+li {
   text-align: center;
 }
 
+li:not(:last-child) {
+  border-right: rgba(129, 207, 219, 0.3) 1px solid;
+}
+
 .pollution-warp {
-  /*height: calc(80%);*/
-  margin-top: 20px;
-  overflow: auto;
+  height: 600px;
+  overflow: scroll;
+}
+
+::-webkit-scrollbar {
+  display: none; /* Chrome Safari */
 }
 
 .pollution-list {
-  margin-top: 10px;
-  width: 100%;
+  margin-top: 15px;
+  /*width: 100%;*/
   height: 28px;
   font-size: 18px;
   color: #dde1e0;

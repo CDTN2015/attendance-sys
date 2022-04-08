@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card>
+    <v-card id="card">
       <v-card-title>
         <span class="text-h5">提交申请</span>
       </v-card-title>
@@ -59,4 +59,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+#card {
+  opacity: 0.8;
+}
+</style>
