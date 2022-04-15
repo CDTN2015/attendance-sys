@@ -140,6 +140,7 @@
         </template>
       </v-row>
       <v-textarea
+        v-model="reason"
         v-if="type !== '忘记打卡'"
         class="mt-6 mb-n10"
         :label="`${type}事由`"
@@ -159,7 +160,7 @@
 </template>
 
 <script>
-// import { axios } from "@/api/axiosConfig";
+import { axios } from "@/api/axiosConfig";
 // import { timeout } from "@/api/function";
 export default {
   name: "AskForLeave",
@@ -181,6 +182,7 @@ export default {
       menu2: false,
       menu3: false,
       menu4: false,
+      reason: "",
       snackbarStatue: false,
       snackbarMsg: "",
       snackbarType: "info",
@@ -207,6 +209,23 @@ export default {
           ? `${this.date.start}_${this.time.start}补卡`
           : `从${this.date.start}_${this.time.start}到${this.date.end}_${this.time.end}${this.type}`
       );
+      let param = {
+        startTime: `${this.date.start} ${this.time.start}:00`,
+        endTime: `${this.date.end} ${this.time.end}:00`,
+        incident: this.reason,
+        state: "2",
+      };
+      let a = new Date(param.startTime);
+      console.log(a);
+
+      console.log(param);
+      try {
+        const response = await axios.post("/state/insert", param);
+        console.log(response);
+      } catch (error) {
+        console.error(error);
+      }
+
       this.snackbarStatue = true;
       this.snackbarMsg = "提交成功";
       this.snackbarType = "success";

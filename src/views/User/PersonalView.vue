@@ -56,6 +56,17 @@
 
     <div class="pollution-content">
       <ul class="pollution-top">
+        <!--        <li style="width: 10%">日期</li>-->
+        <!--        <li style="width: 9%">上班时间</li>-->
+        <!--        <li style="width: 9%">下班时间</li>-->
+        <!--        <li style="width: 9%">迟到时长</li>-->
+        <!--        <li style="width: 9%">早退时长</li>-->
+        <!--        <li style="width: 9%">工作时长</li>-->
+        <!--        <li style="width: 9%">需补卡时长</li>-->
+        <!--        <li style="width: 9%">加班时长</li>-->
+        <!--        <li style="width: 9%">请假时长</li>-->
+        <!--        <li style="width: 9%">出差时长</li>-->
+        <!--        <li style="width: 9%">上班状态</li>-->
         <li style="width: 10%">日期</li>
         <li style="width: 9%">上班时间</li>
         <li style="width: 9%">下班时间</li>
@@ -75,15 +86,31 @@
             :key="index"
             class="pollution-list"
           >
+            <!--            <li style="width: 10%">{{ item.workDay }}</li>-->
+            <!--            <li style="width: 9%">{{ item.workSign }}</li>-->
+            <!--            <li style="width: 9%">{{ item.leaveSign }}</li>-->
+            <!--            <li style="width: 9%">{{ item.lateHour }}</li>-->
+            <!--            <li style="width: 9%">{{ item.earlyLeaveHour }}</li>-->
+            <!--            <li style="width: 9%">{{ item.workDuration }}</li>-->
+            <!--            <li style="width: 9%">{{ item.lackDuration }}</li>-->
+            <!--            <li style="width: 9%">item.overwork</li>-->
+            <!--            <li style="width: 9%">item.matters</li>-->
+            <!--            <li style="width: 9%">item.businessTrip</li>-->
+            <!--            <li-->
+            <!--              style="width: 9%"-->
+            <!--              :style="item.note === '正常' ? 'color:#33fc0e' : 'color:red'"-->
+            <!--            >-->
+            <!--              {{ item.note }}-->
+            <!--            </li>-->
             <li style="width: 10%">{{ item.workDay }}</li>
-            <li style="width: 9%">{{ item.workSign }}</li>
-            <li style="width: 9%">{{ item.leaveSign }}</li>
-            <li style="width: 9%">{{ item.lateHour }}</li>
-            <li style="width: 9%">{{ item.earlyLeaveHour }}</li>
-            <li style="width: 9%">{{ item.workDuration }}</li>
+            <li style="width: 9%">{{ item.startTime }}</li>
+            <li style="width: 9%">{{ item.endTime }}</li>
+            <li style="width: 9%">{{ item.lateMinutes }}分钟</li>
+            <li style="width: 9%">{{ item.earlyLeaveMinutes }}分钟</li>
+            <li style="width: 9%">{{ item.timeDuration }}</li>
             <li style="width: 9%">{{ item.lackDuration }}</li>
-            <li style="width: 9%">item.overwork</li>
-            <li style="width: 9%">item.matters</li>
+            <li style="width: 9%">{{ item.workOvertime }}分钟</li>
+            <li style="width: 9%">{{ item.leaveTime }}</li>
             <li style="width: 9%">item.businessTrip</li>
             <li
               style="width: 9%"
@@ -173,11 +200,32 @@ export default {
     async updateList() {
       try {
         // console.log(`查询月为: ${this.selectMonth}`);
-        const response = await axios.get("/workAttendance/list", {
-          params: {
-            workMonth: this.selectMonth,
-          },
-        });
+        // const response = await axios.get("/workAttendance/list", {
+        //   params: {
+        //     workMonth: this.selectMonth,
+        //   },
+        // });
+        let params = {
+          // workMonth: this.selectMonth,
+          createTime: "",
+          earlyLeaveMinutes: 0,
+          earlyLeaved: 0,
+          id: 0,
+          lackDuration: 0,
+          lateMinutes: 0,
+          lated: 0,
+          leaveTime: 0,
+          name: "",
+          note: "",
+          timeDuration: 0,
+          userId: 0,
+          workDay: "",
+          workMonth: "",
+          workOvertime: 0,
+          startTime: "2022-4-17 08:30:00",
+          endTime: "2022-4-17 18:30:00",
+        };
+        const response = await axios.post("/workAttendance/insert", params);
         console.log(response);
         this.snackbarStatue = true;
         if (response.data.code === 200) {
@@ -189,7 +237,7 @@ export default {
           this.realWorkDay = response.data.data.realWorkDay;
           this.workHour = response.data.data.workHour;
           this.workMonth = this.monthWorkDay * 8;
-          console.log(this.detailList);
+          //console.log(this.detailList);
         } else {
           this.snackbarMsg = "数据获取失败，请重试";
           this.snackbarType = "error";

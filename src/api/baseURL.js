@@ -7,12 +7,14 @@ if (process.env.NODE_ENV === "production") {
     baseURL = "http://api.xinggeyun.com";
   } else {
     //test 测试环境
-    baseURL = "http://192.168.119.249:11401";
+    baseURL = "http://192.168.119.249:11402";
+    // baseURL = "http://106.45.140.73:11401";
   }
 } else {
   //dev 开发环境
   // eslint-disable-next-line no-unused-vars
-  baseURL = "http://192.168.119.249:11401";
+  // baseURL = "http://192.168.119.249:11401";
+  baseURL = "http://192.168.119.249:11402";
 }
 
 console.log("当前baseURL为：", baseURL);
