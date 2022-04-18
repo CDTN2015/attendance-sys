@@ -26,7 +26,7 @@
       right
       absolute
       dark
-      src="@/assets/background1.jpg"
+      src="@/assets/background3.jpg"
     >
       <!--      用户信息栏-->
       <v-list>
@@ -113,6 +113,14 @@ import SubmitRequest from "@/components/SubmitRequest";
 
 export default {
   name: "UserView",
+  mounted() {
+    // 挂载导航栏到正确页面
+    for (let i = 0; i < this.userItems.length; ++i) {
+      if (this.$route.path === this.userItems[i].route) {
+        this.selectedUserItem = i;
+      }
+    }
+  },
   data() {
     return {
       token: localStorage.getItem("Token"),
@@ -180,7 +188,6 @@ export default {
 
 <style scoped>
 #background {
-  background: url("../assets/background2.jpg");
   height: 100%;
   min-height: 600px;
   overflow: hidden;

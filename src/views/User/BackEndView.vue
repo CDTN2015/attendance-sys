@@ -1,9 +1,9 @@
 <template>
   <div class="table">
     <v-row class="mx-10">
-      <v-col cols="6" sm="4" md="4" lg="3" class="mt-2 justify-center">
+      <v-col cols="6" sm="4" md="4" lg="2" class="mt-2 justify-center">
         <v-menu
-          v-model="menu1"
+          v-model="menu"
           :close-on-content-click="false"
           transition="scale-transition"
           offset-y
@@ -12,7 +12,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-text-field
               v-model="query.date"
-              label="查询日期"
+              label="日期"
               prepend-icon="mdi-calendar"
               readonly
               v-bind="attrs"
@@ -31,14 +31,30 @@
           </v-date-picker>
         </v-menu>
       </v-col>
-      <v-col cols="6" sm="4" md="4" lg="3" class="mt-2 justify-center">
+      <v-col cols="6" sm="4" md="4" lg="2" class="mt-2 justify-center">
         <v-text-field
           v-model="query.name"
-          label="查询姓名"
+          label="姓名"
           prepend-icon="mdi-account"
           clearable
           dark
         ></v-text-field>
+      </v-col>
+      <v-col cols="3" sm="2" md="2" lg="2" class="mt-2 justify-center">
+        <v-select
+          v-model="query.selectType"
+          :items="items"
+          label="事务类型"
+          dark
+        ></v-select>
+      </v-col>
+      <v-col cols="3" sm="2" md="2" lg="2" class="mt-2 justify-center">
+        <v-checkbox
+          id="pwd-checkbox"
+          v-model="query.showWait"
+          label="只看待办"
+          dark
+        ></v-checkbox>
       </v-col>
       <v-col cols="4" sm="4" md="2" lg="1" class="mt-4 justify-center">
         <v-btn
@@ -47,61 +63,108 @@
           rounded
           :loading="load"
           color="white"
-          @click="search"
+          @click="filter"
         >
-          <v-icon left dark> mdi-magnify </v-icon>查询
+          <v-icon left dark> mdi-filter-outline </v-icon>筛选
         </v-btn>
       </v-col>
       <v-col cols="12">
         <v-divider dark></v-divider>
       </v-col>
       <v-col cols="12">
-        <v-simple-table dark style="background-color: transparent">
-          <template v-slot:default>
-            <thead>
-              <tr id="header">
-                <th>姓名</th>
-                <th>日期</th>
-                <th>待办事项</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item in approvalList" :key="item.id" id="data">
-                <td style="width: 30%; min-width: 150px">{{ item.name }}</td>
-                <td style="width: 30%; min-width: 200px">{{ item.date }}</td>
-                <td
-                  style="width: 30%; min-width: 200px"
-                  :style="
-                    item.type === '正常'
-                      ? 'color: #05d5ff'
-                      : item.type === '加班'
-                      ? 'color: chartreuse'
-                      : 'color: orange'
-                  "
+        <v-card style="background-color: transparent">
+          <v-simple-table style="background-color: transparent">
+            <template v-slot:default>
+              <thead>
+                <tr id="header">
+                  <th class="text-center">姓名</th>
+                  <th class="text-center">日期</th>
+                  <th class="text-center">待办事项</th>
+                  <th class="text-center">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(item, index) in showList.slice(
+                    itemsPerPage * (page - 1),
+                    itemsPerPage * page
+                  )"
+                  :key="index"
+                  :id="item.done ? 'data' : 'none'"
                 >
-                  {{ item.type }}
-                </td>
-                <td style="width: 10%; min-width: 50px">
-                  <v-btn
-                    elevation="2"
-                    block
-                    rounded
-                    @click="more(item)"
-                    :color="item.done === 'accept' ? 'success' : 'primary'"
+                  <td class="text-center" style="width: 25%">
+                    {{ item.name }}
+                  </td>
+                  <td class="text-center" style="width: 25%" v-if="item.done">
+                    {{ item.date.slice(0, 4) }}年{{ item.date.slice(5, 7) }}月{{
+                      item.date.slice(8)
+                    }}日
+                  </td>
+                  <td
+                    class="text-center"
+                    style="width: 25%"
+                    :style="
+                      item.type === '忘记打卡'
+                        ? 'color: #05d5ff'
+                        : item.type === '加班'
+                        ? 'color: chartreuse'
+                        : 'color: orange'
+                    "
+                    v-if="item.done"
                   >
-                    <v-icon left light>{{
-                      item.done === "accept"
-                        ? "mdi-check"
-                        : "mdi-dots-horizontal-circle-outline"
-                    }}</v-icon
-                    >{{ item.done === "accept" ? "查看" : "处理" }}
-                  </v-btn>
-                </td>
-              </tr>
-            </tbody>
-          </template>
-        </v-simple-table>
+                    {{ item.type }}
+                  </td>
+                  <td class="text-center" style="width: 25%" v-if="item.done">
+                    <v-btn
+                      elevation="2"
+                      rounded
+                      @click="more(item)"
+                      :color="item.done === 'accept' ? 'success' : 'primary'"
+                    >
+                      <v-icon left dark>{{
+                        item.done === "accept"
+                          ? "mdi-check"
+                          : "mdi-dots-horizontal-circle-outline"
+                      }}</v-icon
+                      >{{ item.done === "accept" ? "查看" : "处理" }}
+                    </v-btn>
+                  </td>
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+          <v-divider dark class="my-5"></v-divider>
+          <v-row>
+            <v-spacer></v-spacer>
+            <!-- 表格分页 -->
+            <v-col cols="3" v-if="page">
+              <v-container class="d-flex justify-center">
+                <v-btn
+                  elevation="2"
+                  outlined
+                  dark
+                  :disabled="page === 1"
+                  @click="page--"
+                >
+                  <v-icon left> mdi-chevron-left</v-icon>
+                </v-btn>
+                <span class="mx-5" style="color: white"
+                  >第{{ page }}页，共{{ totalPage }}页</span
+                >
+                <v-btn
+                  elevation="2"
+                  outlined
+                  dark
+                  :disabled="page === totalPage"
+                  @click="page++"
+                >
+                  <v-icon left> mdi-chevron-right</v-icon>
+                </v-btn>
+              </v-container>
+            </v-col>
+            <v-spacer></v-spacer>
+          </v-row>
+        </v-card>
       </v-col>
     </v-row>
 
@@ -120,8 +183,8 @@
 </template>
 
 <script>
-import { axios } from "@/api/axiosConfig";
-import router from "@/router";
+// import { axios } from "@/api/axiosConfig";
+// import router from "@/router";
 import { timeout } from "@/api/function";
 import HandleRequest from "@/components/HandleRequest";
 
@@ -129,82 +192,216 @@ export default {
   name: "BackEndView",
   data() {
     return {
+      // 每页记录条数
+      itemsPerPage: 10,
+      page: 0,
+      totalPage: 0,
       query: {
         name: "",
         date: "",
+        selectType: "全部",
+        showWait: false,
       },
       snackbarStatue: false,
       snackbarType: "",
       snackbarMsg: "",
-      menu1: false,
-      menu2: false,
+      menu: false,
       load: false,
+      items: ["全部", "请假", "加班", "忘记打卡"],
+      // 原数据
       approvalList: [
         /*done: false, accept, refuse*/
-        { id: 1, name: "jyc", date: "march 2003", type: "正常", done: "false" },
-        { id: 2, name: "cdtn", date: "may 2235", type: "加班", done: "false" },
-        { id: 3, name: "jyc", date: "march 2003", type: "请假", done: "false" },
-        { id: 4, name: "jyc", date: "march 2003", type: "请假", done: "false" },
-        { id: 5, name: "jyc", date: "march 2003", type: "请假", done: "false" },
-        { id: 6, name: "jyc", date: "march 2003", type: "请假", done: "false" },
-        { id: 7, name: "jyc", date: "march 2003", type: "请假", done: "false" },
-        { id: 8, name: "jyc", date: "march 2003", type: "请假", done: "false" },
-        { id: 9, name: "jyc", date: "march 2003", type: "请假", done: "false" },
+        {
+          id: 1,
+          name: "jyc",
+          date: "2022-03-08",
+          type: "忘记打卡",
+          done: "false",
+        },
+        {
+          id: 2,
+          name: "cdtn",
+          date: "2022-05-08",
+          type: "加班",
+          done: "false",
+        },
+        { id: 3, name: "jyc", date: "2022-01-08", type: "请假", done: "false" },
+        { id: 4, name: "jyc", date: "2022-03-20", type: "请假", done: "false" },
+        { id: 5, name: "jyc", date: "2022-03-08", type: "请假", done: "false" },
+        { id: 6, name: "jyc", date: "2022-03-08", type: "请假", done: "false" },
+        { id: 7, name: "jyc", date: "2022-03-08", type: "请假", done: "false" },
+        { id: 8, name: "jyc", date: "2022-03-08", type: "请假", done: "false" },
+        { id: 9, name: "jyc", date: "2022-03-08", type: "请假", done: "false" },
+        {
+          id: 10,
+          name: "jyc",
+          date: "2022-03-08",
+          type: "请假",
+          done: "false",
+        },
+        {
+          id: 11,
+          name: "jyc12",
+          date: "2022-03-08",
+          type: "正常",
+          done: "false",
+        },
+        {
+          id: 12,
+          name: "cdtn",
+          date: "2022-03-20",
+          type: "加班",
+          done: "false",
+        },
+        {
+          id: 13,
+          name: "jyc",
+          date: "2022-03-08",
+          type: "请假",
+          done: "false",
+        },
+        {
+          id: 14,
+          name: "jyc",
+          date: "2022-03-08",
+          type: "请假",
+          done: "false",
+        },
+        {
+          id: 15,
+          name: "jyc",
+          date: "2022-03-08",
+          type: "请假",
+          done: "false",
+        },
+        {
+          id: 16,
+          name: "jyc",
+          date: "2022-03-08",
+          type: "请假",
+          done: "false",
+        },
+        {
+          id: 17,
+          name: "jyc",
+          date: "2022-03-08",
+          type: "请假",
+          done: "false",
+        },
+        // {
+        //   id: 18,
+        //   name: "jyc",
+        //   date: "2022-03-08",
+        //   type: "请假",
+        //   done: "false",
+        // },
+        // {
+        //   id: 19,
+        //   name: "jyc",
+        //   date: "2022-03-08",
+        //   type: "请假",
+        //   done: "false",
+        // },
       ],
+      showList: [],
       requestDialog: false,
     };
   },
   components: { HandleRequest },
-  created() {
-    this.query.date = new Date(
-      Date.now() - new Date().getTimezoneOffset() * 60000
-    )
-      .toISOString()
-      .substring(0, 10);
+  mounted() {
+    // this.query.date = new Date().toISOString().substring(0, 10);
     //this.updateList();
+    // 获取原数据
+
+    // 选择展示数据
+    this.showList = this.approvalList;
+    // 填充展示数据
+    this.fillShowList();
   },
   computed: {},
   methods: {
-    async updateList() {
-      try {
-        // console.log(`查询月为: ${this.selectMonth}`);
-        const response = await axios.get("/workAttendance/list", {
-          params: {
-            workMonth: this.selectMonth,
-          },
-        });
-        console.log(response);
-        this.snackbarStatue = true;
-        if (response.data.code === 200) {
-          this.snackbarMsg = "数据获取成功";
-          this.snackbarType = "success";
-          this.detailList = response.data.data.detailList;
-          this.lackHour = response.data.data.lackHour;
-          this.monthWorkDay = response.data.data.monthWorkDay;
-          this.realWorkDay = response.data.data.realWorkDay;
-          this.workHour = response.data.data.workHour;
-          this.workMonth = this.monthWorkDay * 8;
-          console.log(this.detailList);
-        } else {
-          this.snackbarMsg = "数据获取失败，请重试";
-          this.snackbarType = "error";
-          await router.push({
-            path: "/",
-          });
+    fillShowList() {
+      this.totalPage = Math.ceil(this.showList.length / this.itemsPerPage);
+      if (this.showList.length % this.itemsPerPage !== 0) {
+        let tempItem = { id: 0, name: "", date: "", type: "", done: "" };
+        for (
+          let i = this.showList.length;
+          i < this.totalPage * this.itemsPerPage;
+          ++i
+        ) {
+          this.showList.push(tempItem);
         }
-        await timeout(2000);
-        this.snackbarStatue = false;
-      } catch (error) {
-        console.error(error);
       }
+      this.page = this.totalPage ? 1 : 0;
+    },
+    resetPage() {},
+    async updateList() {
+      // try {
+      //   // console.log(`查询月为: ${this.selectMonth}`);
+      //   const response = await axios.get("/workAttendance/list", {
+      //     params: {
+      //       workMonth: this.selectMonth,
+      //     },
+      //   });
+      //   console.log(response);
+      //   this.snackbarStatue = true;
+      //   if (response.data.code === 200) {
+      //     this.snackbarMsg = "数据获取成功";
+      //     this.snackbarType = "success";
+      //     this.detailList = response.data.data.detailList;
+      //     this.lackHour = response.data.data.lackHour;
+      //     this.monthWorkDay = response.data.data.monthWorkDay;
+      //     this.realWorkDay = response.data.data.realWorkDay;
+      //     this.workHour = response.data.data.workHour;
+      //     this.workMonth = this.monthWorkDay * 8;
+      //     console.log(this.detailList);
+      //   } else {
+      //     this.snackbarMsg = "数据获取失败，请重试";
+      //     this.snackbarType = "error";
+      //     await router.push({
+      //       path: "/",
+      //     });
+      //   }
+      //   await timeout(2000);
+      //   this.snackbarStatue = false;
+      // } catch (error) {
+      //   console.error(error);
+      // }
     },
     setMonth() {
       this.menu = false;
       //this.updateList();
     },
-    async search() {
+    hasName(item) {
+      return item.name.indexOf(this.query.name) > -1;
+    },
+    hasDate(item) {
+      return item.date === this.query.date;
+    },
+    onlyWait(item) {
+      return item.done === "false";
+    },
+    hasType(item) {
+      return item.type === this.query.selectType;
+    },
+    async filter() {
+      console.log(this.query.date, this.query.name);
       this.load = true;
-      await timeout(3000);
+      // await timeout(3000);
+      this.showList = this.query.name
+        ? this.approvalList.filter(this.hasName)
+        : this.approvalList;
+      this.showList = this.query.date
+        ? this.showList.filter(this.hasDate)
+        : this.showList;
+      this.showList = this.query.showWait
+        ? this.showList.filter(this.onlyWait)
+        : this.showList;
+      this.showList =
+        this.query.selectType !== "全部"
+          ? this.showList.filter(this.hasType)
+          : this.showList;
+      this.fillShowList();
       this.load = false;
     },
     async more(item) {
@@ -223,7 +420,6 @@ export default {
 .table {
   margin: 50px auto;
   width: 90%;
-  height: 80%;
   background-color: rgba(36, 43, 95, 0.2);
 }
 
@@ -244,5 +440,8 @@ export default {
       rgba(0, 192, 255, 0.41)
     )
     1 1;
+}
+#none:hover {
+  background-color: transparent;
 }
 </style>

@@ -41,13 +41,6 @@
               off-icon="mdi-lock-remove"
               @click="cleanLogin"
             ></v-checkbox>
-            <v-checkbox
-              id="test-checkbox"
-              v-model="offline"
-              label="离线测试"
-              on-icon="mdi-access-point-remove"
-              off-icon="mdi-access-point"
-            ></v-checkbox>
             <v-btn
               elevation="2"
               block
@@ -82,7 +75,6 @@ import { timeout } from "@/api/function";
 export default {
   name: "LoginView",
   data: () => ({
-    a: "",
     valid: false,
     user: {
       account: "",
@@ -100,7 +92,6 @@ export default {
     show: false,
     load: false,
     rememberPwd: false,
-    offline: true,
     loginStatue: false,
     loginMsg: "",
     loginType: "info",
@@ -128,52 +119,44 @@ export default {
           password: this.user.password,
         };
         // 暂时明文保存用户名和密码
+        localStorage.setItem("loginName", form.account);
         if (this.rememberPwd) {
           localStorage.setItem("rememberPwd", this.rememberPwd);
-          localStorage.setItem("loginName", form.account);
           localStorage.setItem("loginPassword", form.password);
         }
-        if (this.offline) {
-          console.log("离线登录");
-          await router.push({
-            path: "/user",
-          });
-        } else {
-          try {
-            const response = await axios.post("/login/signIn", form);
-            console.log(response);
-            this.loginStatue = true;
-            if (response.data.code === 200) {
-              this.loginMsg = "登录成功，准备跳转";
-              this.loginType = "success";
-              localStorage.setItem("Token", response.data.data.token);
-              localStorage.setItem("department", response.data.data.department);
-              await timeout(1000);
-              this.loginStatue = false;
-              // 判断管理员与用户权限选择不同页面跳转
-              await router.push({
-                path: "/user",
-              });
-              // await router.replace({
-              //   path: "/personal",
-              // });
-            } else {
-              this.loginMsg = "登录失败，请重试";
-              this.loginType = "error";
-              console.log("响应拦截器？");
-              localStorage.removeItem("Token");
-              await timeout(2000);
-              this.loginStatue = false;
-            }
-          } catch (error) {
-            console.error(error);
+        try {
+          const response = await axios.post("/login/signIn", form);
+          console.log(response);
+          this.loginStatue = true;
+          if (response.data.code === 200) {
+            this.loginMsg = "登录成功，准备跳转";
+            this.loginType = "success";
+            localStorage.setItem("Token", response.data.data.token);
+            localStorage.setItem("department", response.data.data.department);
+            await timeout(1000);
+            this.loginStatue = false;
+            // 判断管理员与用户权限选择不同页面跳转
+            await router.push({
+              path: "/user",
+            });
+            // await router.replace({
+            //   path: "/personal",
+            // });
+          } else {
+            this.loginMsg = "登录失败，请重试";
+            this.loginType = "error";
+            console.log("响应拦截器？");
+            localStorage.removeItem("Token");
+            await timeout(2000);
+            this.loginStatue = false;
           }
+        } catch (error) {
+          console.error(error);
         }
       }
     },
     cleanLogin() {
       localStorage.removeItem("rememberPwd");
-      localStorage.removeItem("loginName");
       localStorage.removeItem("loginPassword");
     },
   },
@@ -187,7 +170,6 @@ export default {
 #form {
   width: 40%;
   min-width: 400px;
-  /*border: black 4px solid;*/
   background-color: transparent;
 }
 #form-title {

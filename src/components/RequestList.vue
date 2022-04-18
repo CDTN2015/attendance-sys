@@ -138,6 +138,7 @@
             </v-menu>
           </v-col>
         </template>
+        <v-col cols="12"> </v-col>
       </v-row>
       <v-textarea
         v-model="reason"
@@ -172,16 +173,22 @@ export default {
         minStart: "",
         end: "",
       },
+      date1: "",
       time: {
         start: "08:30",
         end: "08:30",
         max: "22:00",
         min: "8:30",
       },
+      datetime: {
+        start: "",
+        end: "",
+      },
       menu1: false,
       menu2: false,
       menu3: false,
       menu4: false,
+      menu5: false,
       reason: "",
       snackbarStatue: false,
       snackbarMsg: "",

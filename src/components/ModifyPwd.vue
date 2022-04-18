@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card id="card">
+    <v-card>
       <v-card-title>
         <span class="text-h5">修改密码</span>
       </v-card-title>
@@ -154,8 +154,4 @@ export default {
 };
 </script>
 
-<style scoped>
-#card {
-  opacity: 0.8;
-}
-</style>
+<style scoped></style>
