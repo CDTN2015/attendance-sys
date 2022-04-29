@@ -33,43 +33,93 @@
 
     <div class="pollution-content">
       <ul class="pollution-top">
-        <li style="width: 10%">姓名</li>
-        <li style="width: 10%">当月实勤天数</li>
-        <li style="width: 10%">当前工作时长</li>
-        <li style="width: 10%">迟到时长</li>
-        <li style="width: 10%">早退时长</li>
-        <li style="width: 10%">当月请假时长</li>
-        <li style="width: 10%">当月补班时长</li>
-        <li style="width: 10%">当月出差时长</li>
-        <li style="width: 20%">截止当前所需补卡时长</li>
+        <!--        <li style="width: 10%">姓名</li>-->
+        <!--        <li style="width: 10%">当月实勤天数</li>-->
+        <!--        <li style="width: 10%">当前工作时长</li>-->
+        <!--        <li style="width: 10%">迟到时长</li>-->
+        <!--        <li style="width: 10%">早退时长</li>-->
+        <!--        <li style="width: 10%">当月请假时长</li>-->
+        <!--        <li style="width: 10%">当月补班时长</li>-->
+        <!--        <li style="width: 10%">当月出差时长</li>-->
+        <!--        <li style="width: 20%">截止当前所需补卡时长</li>-->
+        <li style="width: 2%">id</li>
+        <li style="width: 8%">姓名</li>
+        <li style="width: 15%">月度出勤天数</li>
+        <li style="width: 15%">迟到时长</li>
+        <li style="width: 15%">早退时长</li>
+        <li style="width: 15%">请假时长</li>
+        <li style="width: 15%">补班时长</li>
+        <li style="width: 15%">还需加补班时长</li>
       </ul>
       <div class="pollution-warp">
-        <vue-seamless-scroll :class-option="classOption" :data="detailList">
-          <ul
-            v-for="(item, index) in detailList"
-            :key="index"
-            class="pollution-list"
-          >
-            <li style="width: 10%">{{ item.workDay }}</li>
-            <li style="width: 9%">{{ item.workSign }}</li>
-            <li style="width: 9%">{{ item.leaveSign }}</li>
-            <li style="width: 9%">{{ item.lateHour }}</li>
-            <li style="width: 9%">{{ item.earlyLeaveHour }}</li>
-            <li style="width: 9%">{{ item.workDuration }}</li>
-            <li style="width: 9%">{{ item.lackDuration }}</li>
-            <li style="width: 9%">item.overwork</li>
-            <li style="width: 9%">item.matters</li>
-            <li style="width: 9%">item.businessTrip</li>
-            <li
-              style="width: 9%"
-              :style="item.note === '正常' ? 'color:#33fc0e' : 'color:red'"
-            >
-              {{ item.note }}
-            </li>
-          </ul>
-        </vue-seamless-scroll>
+        <!--        <vue-seamless-scroll :class-option="classOption" :data="detailList">-->
+        <ul
+          v-for="(item, index) in showList.slice(
+            itemsPerPage * (page - 1),
+            itemsPerPage * page
+          )"
+          :key="index"
+          class="pollution-list"
+        >
+          <!--            <li style="width: 10%">{{ item.workDay }}</li>-->
+          <!--            <li style="width: 9%">{{ item.workSign }}</li>-->
+          <!--            <li style="width: 9%">{{ item.leaveSign }}</li>-->
+          <!--            <li style="width: 9%">{{ item.lateHour }}</li>-->
+          <!--            <li style="width: 9%">{{ item.earlyLeaveHour }}</li>-->
+          <!--            <li style="width: 9%">{{ item.workDuration }}</li>-->
+          <!--            <li style="width: 9%">{{ item.lackDuration }}</li>-->
+          <!--            <li style="width: 9%">item.overwork</li>-->
+          <!--            <li style="width: 9%">item.matters</li>-->
+          <!--            <li style="width: 9%">item.businessTrip</li>-->
+          <!--            <li-->
+          <!--              style="width: 9%"-->
+          <!--              :style="item.note === '正常' ? 'color:#33fc0e' : 'color:red'"-->
+          <!--            >-->
+          <!--              {{ item.note }}-->
+          <!--            </li>-->
+          <li style="width: 2%">{{ item.id ? item.id : "" }}</li>
+          <li style="width: 8%">{{ item.name }}</li>
+          <li style="width: 15%">{{ item.totalAttendanceDate }}</li>
+          <li style="width: 15%">{{ item.totalLateMinutes }}</li>
+          <li style="width: 15%">{{ item.totalEarlyLeaveMinutes }}</li>
+          <li style="width: 15%">{{ item.totalLeaveMinutes }}</li>
+          <li style="width: 15%">{{ item.totalWorkOvertime }}</li>
+          <li style="width: 15%">{{ item.stillNeedExtraWork }}</li>
+        </ul>
+        <!--        </vue-seamless-scroll>-->
       </div>
     </div>
+    <v-divider dark class="my-5"></v-divider>
+    <v-row>
+      <v-spacer></v-spacer>
+      <!-- 表格分页 -->
+      <v-col cols="3" v-if="page">
+        <v-container class="d-flex justify-center">
+          <v-btn
+            elevation="2"
+            outlined
+            dark
+            :disabled="page === 1"
+            @click="page--"
+          >
+            <v-icon left> mdi-chevron-left</v-icon>
+          </v-btn>
+          <span class="mx-5" style="color: white"
+            >第{{ page }}页，共{{ totalPage }}页</span
+          >
+          <v-btn
+            elevation="2"
+            outlined
+            dark
+            :disabled="page === totalPage"
+            @click="page++"
+          >
+            <v-icon left> mdi-chevron-right</v-icon>
+          </v-btn>
+        </v-container>
+      </v-col>
+      <v-spacer></v-spacer>
+    </v-row>
 
     <v-snackbar
       v-model="snackbarStatue"
@@ -82,7 +132,7 @@
 </template>
 
 <script>
-import vueSeamlessScroll from "vue-seamless-scroll";
+// import vueSeamlessScroll from "vue-seamless-scroll";
 import { axios } from "@/api/axiosConfig";
 import router from "@/router";
 import { timeout } from "@/api/function";
@@ -107,10 +157,15 @@ export default {
       snackbarType: "",
       snackbarMsg: "",
       menu: false,
+      // 每页记录条数
+      itemsPerPage: 12,
+      page: 0,
+      totalPage: 0,
+      showList: [],
     };
   },
   components: {
-    vueSeamlessScroll,
+    // vueSeamlessScroll,
   },
   created() {
     this.selectMonth = new Date(
@@ -143,7 +198,7 @@ export default {
     async updateList() {
       try {
         // console.log(`查询月为: ${this.selectMonth}`);
-        const response = await axios.get("/workAttendance/list", {
+        const response = await axios.get("/monthlyWorkAttendance/findByMonth", {
           params: {
             workMonth: this.selectMonth,
           },
@@ -153,13 +208,16 @@ export default {
         if (response.data.code === 200) {
           this.snackbarMsg = "数据获取成功";
           this.snackbarType = "success";
-          this.detailList = response.data.data.detailList;
-          this.lackHour = response.data.data.lackHour;
-          this.monthWorkDay = response.data.data.monthWorkDay;
-          this.realWorkDay = response.data.data.realWorkDay;
-          this.workHour = response.data.data.workHour;
-          this.workMonth = this.monthWorkDay * 8;
-          console.log(this.detailList);
+          this.detailList = response.data.data;
+          this.showList = this.detailList;
+          this.fillShowList();
+          // this.detailList = response.data.data.detailList;
+          // this.lackHour = response.data.data.lackHour;
+          // this.monthWorkDay = response.data.data.monthWorkDay;
+          // this.realWorkDay = response.data.data.realWorkDay;
+          // this.workHour = response.data.data.workHour;
+          // this.workMonth = this.monthWorkDay * 8;
+          // console.log(this.detailList);
         } else {
           this.snackbarMsg = "数据获取失败，请重试";
           this.snackbarType = "error";
@@ -176,6 +234,20 @@ export default {
     setMonth() {
       this.menu = false;
       this.updateList();
+    },
+    fillShowList() {
+      this.totalPage = Math.ceil(this.showList.length / this.itemsPerPage);
+      if (this.showList.length % this.itemsPerPage !== 0) {
+        let tempItem = { id: 0, name: "", date: "", type: "", done: "" };
+        for (
+          let i = this.showList.length;
+          i < this.totalPage * this.itemsPerPage;
+          ++i
+        ) {
+          this.showList.push(tempItem);
+        }
+      }
+      this.page = this.totalPage ? 1 : 0;
     },
   },
 };
@@ -236,7 +308,7 @@ li:not(:last-child) {
 }
 
 .pollution-warp {
-  height: 600px;
+  height: 530px;
   overflow: scroll;
 }
 

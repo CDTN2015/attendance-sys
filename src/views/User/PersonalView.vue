@@ -135,7 +135,7 @@
 
 <script>
 import vueSeamlessScroll from "vue-seamless-scroll";
-// import { axios } from "@/api/axiosConfig";
+import { axios } from "@/api/axiosConfig";
 // import { timeout } from "@/api/function";
 // import router from "@/router";
 
@@ -197,59 +197,68 @@ export default {
     },
   },
   methods: {
+    // async updateList() {
+    //   try {
+    //     console.log(`查询月为: ${this.selectMonth}`);
+    //     const response = await axios.get("/workAttendance/list", {
+    //       params: {
+    //         workMonth: this.selectMonth,
+    //       },
+    //     });
+    //     let params = {
+    //       // workMonth: this.selectMonth,
+    //       createTime: "",
+    //       earlyLeaveMinutes: 0,
+    //       earlyLeaved: 0,
+    //       id: 0,
+    //       lackDuration: 0,
+    //       lateMinutes: 0,
+    //       lated: 0,
+    //       leaveTime: 0,
+    //       name: "",
+    //       note: "",
+    //       timeDuration: 0,
+    //       userId: 0,
+    //       workDay: "",
+    //       workMonth: "",
+    //       workOvertime: 0,
+    //       startTime: "2022-4-17 08:30:00",
+    //       endTime: "2022-4-17 18:30:00",
+    //     };
+    //     const response = await axios.post("/workAttendance/insert", params);
+    //     console.log(response);
+    //     this.snackbarStatue = true;
+    //     if (response.data.code === 200) {
+    //       this.snackbarMsg = "数据获取成功";
+    //       this.snackbarType = "success";
+    //       this.detailList = response.data.data.detailList;
+    //       this.lackHour = response.data.data.lackHour;
+    //       this.monthWorkDay = response.data.data.monthWorkDay;
+    //       this.realWorkDay = response.data.data.realWorkDay;
+    //       this.workHour = response.data.data.workHour;
+    //       this.workMonth = this.monthWorkDay * 8;
+    //       //console.log(this.detailList);
+    //     } else {
+    //       this.snackbarMsg = "数据获取失败，请重试";
+    //       this.snackbarType = "error";
+    //       await router.push({
+    //         path: "/",
+    //       });
+    //     }
+    //     await timeout(2000);
+    //     this.snackbarStatue = false;
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    // },
     async updateList() {
-      // try {
-      //   // console.log(`查询月为: ${this.selectMonth}`);
-      //   // const response = await axios.get("/workAttendance/list", {
-      //   //   params: {
-      //   //     workMonth: this.selectMonth,
-      //   //   },
-      //   // });
-      //   let params = {
-      //     // workMonth: this.selectMonth,
-      //     createTime: "",
-      //     earlyLeaveMinutes: 0,
-      //     earlyLeaved: 0,
-      //     id: 0,
-      //     lackDuration: 0,
-      //     lateMinutes: 0,
-      //     lated: 0,
-      //     leaveTime: 0,
-      //     name: "",
-      //     note: "",
-      //     timeDuration: 0,
-      //     userId: 0,
-      //     workDay: "",
-      //     workMonth: "",
-      //     workOvertime: 0,
-      //     startTime: "2022-4-17 08:30:00",
-      //     endTime: "2022-4-17 18:30:00",
-      //   };
-      //   const response = await axios.post("/workAttendance/insert", params);
-      //   console.log(response);
-      //   this.snackbarStatue = true;
-      //   if (response.data.code === 200) {
-      //     this.snackbarMsg = "数据获取成功";
-      //     this.snackbarType = "success";
-      //     this.detailList = response.data.data.detailList;
-      //     this.lackHour = response.data.data.lackHour;
-      //     this.monthWorkDay = response.data.data.monthWorkDay;
-      //     this.realWorkDay = response.data.data.realWorkDay;
-      //     this.workHour = response.data.data.workHour;
-      //     this.workMonth = this.monthWorkDay * 8;
-      //     //console.log(this.detailList);
-      //   } else {
-      //     this.snackbarMsg = "数据获取失败，请重试";
-      //     this.snackbarType = "error";
-      //     await router.push({
-      //       path: "/",
-      //     });
-      //   }
-      //   await timeout(2000);
-      //   this.snackbarStatue = false;
-      // } catch (error) {
-      //   console.error(error);
-      // }
+      console.log(`查询月为: ${this.selectMonth}`);
+      const response = await axios.get("/monthlyWorkAttendance/findByMonth", {
+        params: {
+          workMonth: this.selectMonth,
+        },
+      });
+      console.log(response);
     },
     setMonth() {
       this.menu = false;
